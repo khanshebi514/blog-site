@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Posts;
+use Auth;
 use Illuminate\Http\Request;
 
 class PostsController extends Controller
@@ -21,7 +22,11 @@ class PostsController extends Controller
 
     public function editForm($id){
         $post = Posts::find( $id );
-        return view("posts.edit-post" , compact("post"));
+        if( $post->user_id != Auth::user()->id ){
+            return 'Only auther can Edit the Post';
+        }
+        
+        return view("posts.edit-post" , compact("post")) ;
     }
     public function updatePost($id){
         $post = request()->validate([
@@ -37,6 +42,7 @@ class PostsController extends Controller
         $post = Posts::update([
             'title'=> request('title'),
             'post'=> request('post'),
+            'user_id'=>Auth::user()->id
         ]);
 
         redirect('/posts/'. $id);   
@@ -55,7 +61,9 @@ class PostsController extends Controller
         Posts::create([
             'title'=> $postAtt['title'],
             'post'=> $postAtt['post'],
+            'user_id'=>Auth::user()->id,
         ]);
+        
 
         return redirect('/posts');
     }
