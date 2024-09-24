@@ -23,7 +23,7 @@ class PostsController extends Controller
     public function editForm($id){
         $post = Posts::find( $id );
         if( $post->user_id != Auth::user()->id ){
-            return 'Only auther can Edit the Post';
+           return abort(403);
         }
         
         return view("posts.edit-post" , compact("post")) ;
